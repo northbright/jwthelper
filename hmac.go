@@ -17,6 +17,12 @@ type HMACHelper struct {
 	Keys map[string][]byte // Map contains HMAC Keys. Key: key id('kid' of JWT header), Value: HMAC Key bytes.
 }
 
+// Token use HMAC algorithm
+type HMACToken struct {
+	jwt.Token
+	helper *HMACHelper
+}
+
 // NewHMACHelper() creates a HMACHelper.
 //
 //   Params:
@@ -72,6 +78,20 @@ func (h *HMACHelper) SetKey(kid string, keyFilePath string) {
 		msg := fmt.Sprintf("Read key file err: %s", err)
 		log.Fatalf("%s\n", msg)
 	}
+}
+
+func (h *HMACHelper) NewToken(kid string) (t *HMACToken) {
+	if kid == "" {
+		msg := "Empty kid."
+		log.Fatalf("%s\n", msg)
+	}
+
+	method := jwt.GetSigningMethod(h.Alg)
+	jwtToken := jwt.New(method)
+
+	t = &HMACToken{*jwtToken, h}
+	t.Header["kid"] = kid
+	return t
 }
 
 // CreateTokenString() creates a token string.
