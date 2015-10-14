@@ -25,6 +25,10 @@ type JwtHelper struct {
 	sync.RWMutex                 // Access map concurrently.
 }
 
+func New() (h *JwtHelper) {
+	return &JwtHelper{}
+}
+
 func ReadKey(keyFile string) (key []byte, err error) {
 	if err := errorhelper.GenEmptyStringError(keyFile, "keyFile"); err != nil {
 		return nil, err
