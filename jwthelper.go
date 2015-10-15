@@ -240,6 +240,11 @@ func (h *JwtHelper) Parse(tokenString string) (kid string, claims map[string]int
 			return nil, err
 		}
 
+		// Check signing method
+		if token.Method != key.Method {
+			return nil, errors.New("Signing Method Error.")
+		}
+
 		return key.VerifyKey, nil
 	})
 
