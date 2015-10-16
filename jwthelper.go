@@ -98,24 +98,21 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 
 	m := jwt.GetSigningMethod(alg)
 	if m == nil {
-		return errors.New(fmt.Sprintf("Incorrect alg: %s. Available algs: HS246,HS384,HS512,RS256,RS384,RS512,ES256,ES384,ES512", alg))
+		msg := fmt.Sprintf("Incorrect alg: %s. Available algs: HS246,HS384,HS512,RS256,RS384,RS512,ES256,ES384,ES512", alg)
+		return errors.New(msg)
 	}
 
 	// Set Signing Method
 	key.Method = m
 
 	switch alg {
-	case "HS256":
-	case "HS384":
-	case "HS512":
+	case "HS256", "HS384", "HS512":
 		if key.SignKey, err = ReadKey(signKeyFile); err != nil {
 			return err
 		}
 		key.VerifyKey = key.SignKey
 
-	case "RS256":
-	case "RS384":
-	case "RS512":
+	case "RS256", "RS384", "RS512":
 		buf := []byte{}
 		if buf, err = ReadKey(signKeyFile); err != nil {
 			return err
@@ -133,9 +130,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 			return err
 		}
 
-	case "ES256":
-	case "ES384":
-	case "ES512":
+	case "ES256", "ES384", "ES512":
 		buf := []byte{}
 		if buf, err = ReadKey(signKeyFile); err != nil {
 			return err
@@ -153,7 +148,8 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 			return err
 		}
 	default:
-		return errors.New(fmt.Sprintf("Incorrect alg: %s. Available algs: HS246,HS384,HS512,RS256,RS384,RS512,ES256,ES384,ES512", alg))
+		msg := fmt.Sprintf("Incorrect alg: %s. Available algs: HS246,HS384,HS512,RS256,RS384,RS512,ES256,ES384,ES512", alg)
+		return errors.New(msg)
 	}
 
 	setKey(kid, key)
