@@ -25,7 +25,7 @@ type KeyManager struct {
 }
 
 var (
-	km KeyManager = KeyManager{} // Internal key manager.
+	km KeyManager = KeyManager{Keys: make(map[string]*Key)} // Internal key manager.
 )
 
 // ReadKey() reads key bytes from the key file.
