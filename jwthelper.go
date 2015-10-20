@@ -14,8 +14,8 @@ import (
 // Key struct consists of algorithm, signning key and verifying key.
 type Key struct {
 	Method    jwt.SigningMethod // jwt.SigningMethod
-	SignKey   interface{}       // Signing key. HMAC: []byte, RSA: *crypto/rsa.PrivateKey, ECDSA: *crypto/ecdsa.PrivateKey.
-	VerifyKey interface{}       // Verifying key. HMAC: []byte, RSA: *crypto/rsa.PublicKey, ECDSA: *crypto/ecdsa.PublicKey.
+	SignKey   interface{}       // Signing key. HMAC: []byte, RSA / RSAPSS: *crypto/rsa.PrivateKey, ECDSA: *crypto/ecdsa.PrivateKey.
+	VerifyKey interface{}       // Verifying key. HMAC: []byte, RSA / RSAPSS: *crypto/rsa.PublicKey, ECDSA: *crypto/ecdsa.PublicKey.
 }
 
 //  KeyManger manages the keys by using kid(key id).
@@ -23,6 +23,10 @@ type KeyManager struct {
 	Keys         map[string]*Key // Key map. Key: kid(key id), Value: Key Struct
 	sync.RWMutex                 // Access map concurrently.
 }
+
+const (
+	AvailableAlgs string = "Available algs: HS256,HS384,HS512,RS256,RS384,RS512,PS256,PS384,PS512,ES256,ES384,ES512"
+)
 
 var (
 	km KeyManager = KeyManager{Keys: make(map[string]*Key)} // Internal key manager.
@@ -76,7 +80,7 @@ func GetKey(kid string) (k *Key, err error) {
 	return k, nil
 }
 
-// SetKeyFromFile() reads the keys from the key files then stores the unique kid - Key struct pair.
+// SetKeyFromFile() reads the key files and stores the unique kid - Key information pair.
 //
 //   Params:
 //       kid: Key id(unique).
@@ -85,6 +89,11 @@ func GetKey(kid string) (k *Key, err error) {
 //       verifyKeyFile: Verifying key file.
 //   Return:
 //       err: error.
+//   Notes:
+//       1. Current Available JWT "alg": HS256, HS384, HS512, RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384, ES512.
+//       2. HMAC using SHA-XXX is a symmetric key algorithm. It just read signKeyFile as secret key(verifyKeyFile is ignored).
+//       3. How to Generate Keys for JWT algs:
+//          https://github.com/northbright/Notes/blob/master/jwt/generate_keys_for_jwt_alg.md
 func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 	key := &Key{}
 
@@ -98,7 +107,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 
 	m := jwt.GetSigningMethod(alg)
 	if m == nil {
-		msg := fmt.Sprintf("Incorrect alg: %s. Available algs: HS246,HS384,HS512,RS256,RS384,RS512,ES256,ES384,ES512", alg)
+		msg := fmt.Sprintf("Incorrect alg: %s. %s", alg, AvailableAlgs)
 		return errors.New(msg)
 	}
 
@@ -112,7 +121,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 		}
 		key.VerifyKey = key.SignKey
 
-	case "RS256", "RS384", "RS512":
+	case "RS256", "RS384", "RS512", "PS256", "PS384", "PS512":
 		buf := []byte{}
 		if buf, err = ReadKey(signKeyFile); err != nil {
 			return err
@@ -148,75 +157,12 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 			return err
 		}
 	default:
-		msg := fmt.Sprintf("Incorrect alg: %s. Available algs: HS246,HS384,HS512,RS256,RS384,RS512,ES256,ES384,ES512", alg)
+		msg := fmt.Sprintf("Incorrect alg: %s. %s", alg, AvailableAlgs)
 		return errors.New(msg)
 	}
 
 	setKey(kid, key)
 	return nil
-}
-
-// SetHS256Key() reads the HMAC SHA-256 key from key file and stores it with unique kid(key id).
-//
-// Key generation: github.com/northbright/keygen to generate HMAC SHA-XX key file.
-func SetHS256Key(kid, keyFile string) (err error) {
-	return SetKeyFromFile(kid, "HS256", keyFile, keyFile)
-}
-
-// SetHS384Key() reads the HMAC SHA-384 key from key file and stores it with unique kid(key id).
-//
-// Key generation: github.com/northbright/keygen to generate HMAC SHA-XX key file.
-func SetHS384Key(kid, keyFile string) (err error) {
-	return SetKeyFromFile(kid, "HS384", keyFile, keyFile)
-}
-
-// SetHS512Key() reads the HMAC SHA-512 key from key file and stores it with unique kid(key id).
-//
-// Key generation: github.com/northbright/keygen to generate HMAC SHA-XX key file.
-func SetHS512Key(kid, keyFile string) (err error) {
-	return SetKeyFromFile(kid, "HS512", keyFile, keyFile)
-}
-
-// SetRS256Key() reads the RSA SHA-256 keys from key files and stores it with unique kid(key id).
-//
-// Key generation: ssh-keygen -t rsa -b 2048
-func SetRS256Key(kid, privKeyFile, pubKeyFile string) (err error) {
-	return SetKeyFromFile(kid, "RS256", privKeyFile, pubKeyFile)
-}
-
-// SetRS384Key() reads the RSA SHA-384 keys from key files and stores it with unique kid(key id).
-//
-// Key generation: ssh-keygen -t rsa -b 2048
-func SetRS384Key(kid, privKeyFile, pubKeyFile string) (err error) {
-	return SetKeyFromFile(kid, "RS384", privKeyFile, pubKeyFile)
-}
-
-// SetRS512Key() reads the RSA SHA-512 keys from key files and stores it with unique kid(key id).
-//
-// Key generation: ssh-keygen -t rsa -b 2048
-func SetRS512Key(kid, privKeyFile, pubKeyFile string) (err error) {
-	return SetKeyFromFile(kid, "RS512", privKeyFile, pubKeyFile)
-}
-
-// SetES256Key() reads the ECDSA(using P-256 curve and SHA-256) keys from key files and stores it with unique kid(key id).
-//
-// Key generation: ssh-keygen -t ecdsa -b 256
-func SetES256Key(kid, privKeyFile, pubKeyFile string) (err error) {
-	return SetKeyFromFile(kid, "ES256", privKeyFile, pubKeyFile)
-}
-
-// SetES384Key() reads the ECDSA(using P-384 curve and SHA-384) keys from key files and stores it with unique kid(key id).
-//
-// Key generation: ssh-keygen -t ecdsa -b 384
-func SetES384Key(kid, privKeyFile, pubKeyFile string) (err error) {
-	return SetKeyFromFile(kid, "ES384", privKeyFile, pubKeyFile)
-}
-
-// SetES512Key() reads the ECDSA(using P-521 curve and SHA-512) keys from key files and stores it with unique kid(key id).
-//
-// Key generation: ssh-keygen -t ecdsa -b 521(NOT 512)
-func SetES512Key(kid, privKeyFile, pubKeyFile string) (err error) {
-	return SetKeyFromFile(kid, "ES512", privKeyFile, pubKeyFile)
 }
 
 // CreateTokenString() creates a new JWT token string.
