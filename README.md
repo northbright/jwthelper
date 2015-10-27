@@ -45,12 +45,12 @@ jwthelper is a [Golang](https://golang.org/) package that provides [JWT(JSON Web
 #### Documentation
 * [API Reference](http://godoc.org/github.com/northbright/jwthelper)
 
+#### How to Generate Keys for JWT algs
+* [Generate Keys for JWT algs](https://github.com/northbright/Notes/blob/master/jwt/generate_keys_for_jwt_alg.md)
+
 #### Thanks
 * [jwt-go](https://github.com/dgrijalva/jwt-go)  
   Many Thanks for [Dave Grijalva's powerful golang implemetion of JWT](https://github.com/dgrijalva/jwt-go)
-
-#### References
-* [Generate Keys for JWT algs](https://github.com/northbright/Notes/blob/master/jwt/generate_keys_for_jwt_alg.md)
 
 #### License
 * [MIT License](./LICENSE)
