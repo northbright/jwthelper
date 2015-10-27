@@ -31,6 +31,8 @@ var (
 	}
 )
 
+// To run test, please add -c parameter:
+// go test -c && ./jwthelper.test
 func Example() {
 	for i, v := range testCases {
 		// Set Key with kid
