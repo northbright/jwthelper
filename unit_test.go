@@ -62,5 +62,16 @@ func Example() {
 			fmt.Fprintf(os.Stderr, "Parse(%v) successfully.\nKid: %v, new claims: %v, valid: %v\n", v.TokenString, kid, newClaims, valid)
 		}
 	}
+
+	// Test DeleteKey()
+	kid := "12"
+	if err := jwthelper.DeleteKey(kid); err != nil {
+		fmt.Fprintf(os.Stderr, "DeleteKey(%v) error: %v\n", kid, err)
+	}
+
+	if _, err := jwthelper.GetKey(kid); err != nil {
+		fmt.Fprintf(os.Stderr, "DeleteKey(%v) succeeded: %v.\n", kid, err)
+	}
+
 	// Output:
 }

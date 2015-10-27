@@ -80,6 +80,19 @@ func GetKey(kid string) (k *Key, err error) {
 	return k, nil
 }
 
+// DeleteKey() deletes the specified entry from the key map.
+func DeleteKey(kid string) (err error) {
+	if _, err := GetKey(kid); err != nil {
+		return err
+	}
+
+	km.Lock()
+	delete(km.Keys, kid)
+	km.Unlock()
+
+	return nil
+}
+
 // SetKeyFromFile() reads the key files and stores the unique kid - Key information pair.
 //
 //   Params:
