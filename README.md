@@ -11,10 +11,10 @@ jwthelper is a [Golang](https://golang.org/) package that provides [JWT(JSON Web
 #### Example
 * Set Key
 
-        // Set RSA with SHA-256 hash algorithm Key pair with kid.
+        // Set key id and key pair for RSASSA-PKCS-v1_5 with SHA-256 hash algorithm.
         jwthelper.SetKeyFromFile("kid_001", "RS256", "./keys/RSA_2048_priv.pem", "./keys/RSA_2048_pub.pem")
 
-        // Set HMAC with SHA-256 hash algorithm key with kid.
+        // Set key id and key for HMAC with SHA-256 hash algorithm.
         // HMAC using SHA-XXX is a symmetric key algorithm. It just read signKeyFile as secret key(verifyKeyFile is ignored). 
         jwthelper.SetKeyFromFile("kid_002", "HS256", "./keys/HMAC.key", "")
 * Create JWT Token String
