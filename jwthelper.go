@@ -52,12 +52,12 @@ func ReadKey(keyFile string) (key []byte, err error) {
 	return buf, nil
 }
 
-// setKey() sets the kid - Key pair.
+// SetKey() sets the kid - Key pair.
 //
 //   Params:
 //       kid: Key id. It should be unique.
 //       key: Key struct.
-func setKey(kid string, key *Key) {
+func SetKey(kid string, key *Key) {
 	km.Lock()
 	km.Keys[kid] = key
 	km.Unlock()
@@ -161,7 +161,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 		return errors.New(msg)
 	}
 
-	setKey(kid, key)
+	SetKey(kid, key)
 	return nil
 }
 
