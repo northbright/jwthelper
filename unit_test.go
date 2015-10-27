@@ -58,6 +58,8 @@ func Example() {
 		if kid, newClaims, valid, err := jwthelper.Parse(v.TokenString); err != nil {
 			fmt.Fprintf(os.Stderr, "Parse(%v) error: %v\n", v.TokenString, err)
 			return
+		} else if !valid {
+			fmt.Fprintf(os.Stderr, "Parse(%v) successfully but token is invalid\n", v.TokenString)
 		} else {
 			fmt.Fprintf(os.Stderr, "Parse(%v) successfully.\nKid: %v, new claims: %v, valid: %v\n", v.TokenString, kid, newClaims, valid)
 		}
