@@ -48,6 +48,10 @@ jwthelper is a [Golang](https://golang.org/) package that provides [JWT(JSON Web
 #### How to Generate Keys for JWT algs
 * [Generate Keys for JWT algs](https://github.com/northbright/Notes/blob/master/jwt/generate_keys_for_jwt_alg.md)
 
+#### Test
+* To run test, please add -c parameter:  
+  `go test -c && ./jwthelper.test`
+
 #### Thanks
 * [jwt-go](https://github.com/dgrijalva/jwt-go)  
   Many Thanks for [Dave Grijalva's powerful golang implemetion of JWT](https://github.com/dgrijalva/jwt-go)
