@@ -3,6 +3,9 @@
 #### About
 jwthelper is a [Golang](https://golang.org/) package that provides [JWT(JSON Web Token)](https://en.wikipedia.org/wiki/JSON_Web_Token) functions based on [jwt-go](https://github.com/dgrijalva/jwt-go).
 
+#### Use Case
+* Users know all the keys up-front.
+
 #### Features
 * Simple Key Management Based on `kid(key ID)` of JWT Header
   * No need to write your own key lookup function
