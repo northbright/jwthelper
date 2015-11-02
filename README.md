@@ -53,7 +53,7 @@ jwthelper is a [Golang](https://golang.org/) package that provides [JWT(JSON Web
   `go test -c && ./jwthelper.test`
 
 #### Thanks
-* jwthelper is based on [jwt-go(Dave Grijalva's powerful golang implemetion of JWT)](https://github.com/dgrijalva/jwt-go)
+* [jwthelper](https://github.com/northbright/jwthelper) is based on [jwt-go(Dave Grijalva's powerful golang implemetion of JWT)](https://github.com/dgrijalva/jwt-go)  
   Many Thanks for Dave's [jwt-go](https://github.com/dgrijalva/jwt-go). 
 
 #### License
