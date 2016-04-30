@@ -2,8 +2,9 @@ package jwthelper_test
 
 import (
 	"fmt"
-	"github.com/northbright/jwthelper"
 	"os"
+
+	"github.com/northbright/jwthelper"
 )
 
 type TestCase struct {
