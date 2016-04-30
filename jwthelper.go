@@ -3,12 +3,13 @@ package jwthelper
 import (
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/northbright/errorhelper"
-	"github.com/northbright/pathhelper"
 	"io/ioutil"
 	"net/http"
 	"sync"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/northbright/errorhelper"
+	"github.com/northbright/pathhelper"
 )
 
 // Key struct consists of algorithm, signning key and verifying key.
