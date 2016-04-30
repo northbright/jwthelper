@@ -1,5 +1,7 @@
 # jwthelper
 
+[![Build Status](https://travis-ci.org/northbright/jwthelper.svg?branch=master)](https://travis-ci.org/northbright/jwthelper)
+
 #### About
 jwthelper is a [Golang](https://golang.org/) package that provides [JWT(JSON Web Token)](https://en.wikipedia.org/wiki/JSON_Web_Token) functions based on [jwt-go](https://github.com/dgrijalva/jwt-go).
 
