@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/northbright/errorhelper"
 	"github.com/northbright/pathhelper"
 )
 
@@ -35,10 +34,6 @@ var (
 
 // ReadKey() reads key bytes from the key file.
 func ReadKey(keyFile string) (key []byte, err error) {
-	if err := errorhelper.GenEmptyStringError(keyFile, "keyFile"); err != nil {
-		return nil, err
-	}
-
 	// Make Abs key file path with current executable path if KeyFilePath is relative.
 	p := ""
 	if p, err = pathhelper.GetAbsPath(keyFile); err != nil {
@@ -66,16 +61,12 @@ func SetKey(kid string, key *Key) {
 
 // GetKey() return the key struct by given kid.
 func GetKey(kid string) (k *Key, err error) {
-	if err := errorhelper.GenEmptyStringError(kid, "kid"); err != nil {
-		return nil, err
-	}
-
 	km.RLock()
 	k, ok := km.Keys[kid]
 	km.RUnlock()
 
 	if !ok {
-		return nil, errorhelper.GenMapKeyNotFoundError(kid)
+		return nil, errors.New("No such key id.")
 	}
 
 	return k, nil
@@ -110,14 +101,6 @@ func DeleteKey(kid string) (err error) {
 //          https://github.com/northbright/Notes/blob/master/jwt/generate_keys_for_jwt_alg.md
 func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 	key := &Key{}
-
-	if err := errorhelper.GenEmptyStringError(kid, "kid"); err != nil {
-		return err
-	}
-
-	if err := errorhelper.GenEmptyStringError(alg, "alg"); err != nil {
-		return err
-	}
 
 	m := jwt.GetSigningMethod(alg)
 	if m == nil {
@@ -190,10 +173,6 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 func CreateTokenString(kid string, claims map[string]interface{}) (tokenString string, err error) {
 	var k *Key
 
-	if err = errorhelper.GenEmptyStringError(kid, "kid"); err != nil {
-		return "", err
-	}
-
 	if k, err = GetKey(kid); err != nil {
 		return "", err
 	}
@@ -208,10 +187,6 @@ func CreateTokenString(kid string, claims map[string]interface{}) (tokenString s
 //
 // type Keyfunc func(*Token) (interface{}, error)
 func keyFunc(token *jwt.Token) (interface{}, error) {
-	if _, ok := token.Header["kid"]; !ok {
-		return nil, errorhelper.GenMapKeyNotFoundError("kid")
-	}
-
 	kid := ""
 	if str, ok := token.Header["kid"].(string); !ok {
 		msg := fmt.Sprintf("token.Header[\"kid\"]'s type is %T, but not string.", token.Header["kid"])
