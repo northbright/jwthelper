@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/request"
 	"github.com/northbright/pathhelper"
 )
 
@@ -177,9 +178,8 @@ func CreateTokenString(kid string, claims map[string]interface{}) (tokenString s
 		return "", err
 	}
 
-	t := jwt.New(k.Method)
+	t := jwt.NewWithClaims(k.Method, jwt.MapClaims(claims))
 	t.Header["kid"] = kid
-	t.Claims = claims
 	return t.SignedString(k.SignKey)
 }
 
@@ -223,23 +223,25 @@ func Parse(tokenString string) (kid string, claims map[string]interface{}, valid
 		return "", nil, false, err
 	}
 
-	return t.Header["kid"].(string), t.Claims, t.Valid, nil
+	return t.Header["kid"].(string), t.Claims.(jwt.MapClaims), t.Valid, nil
 }
 
 // ParseFromRequest() parses and validates the input token string in an http.Request. It's a wrapper of jwt.ParseFromRequest().
 //
 //   Params:
 //       r: http.Request may contain jwt token.
+//       extractor: Interface for extracting a token from an HTTP request.
+//                  See https://godoc.org/github.com/dgrijalva/jwt-go/request#Extractor
 //   Return:
 //       kid: Key id.
 //       claims: map[string]interface{} to fill the jwt.Token[Claims].
 //       valid: token is valid or not.
 //       err: error.
-func ParseFromRequest(r *http.Request) (kid string, claims map[string]interface{}, valid bool, err error) {
-	t, err := jwt.ParseFromRequest(r, keyFunc)
+func ParseFromRequest(r *http.Request, e request.Extractor) (kid string, claims map[string]interface{}, valid bool, err error) {
+	t, err := request.ParseFromRequest(r, e, keyFunc)
 	if err != nil {
 		return "", nil, false, err
 	}
 
-	return t.Header["kid"].(string), t.Claims, t.Valid, nil
+	return t.Header["kid"].(string), t.Claims.(jwt.MapClaims), t.Valid, nil
 }
