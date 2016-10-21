@@ -188,13 +188,15 @@ func CreateTokenString(kid string, claims map[string]interface{}) (tokenString s
 // type Keyfunc func(*Token) (interface{}, error)
 func keyFunc(token *jwt.Token) (interface{}, error) {
 	kid := ""
-	if str, ok := token.Header["kid"].(string); !ok {
+	str := ""
+	ok := false
+
+	if str, ok = token.Header["kid"].(string); !ok {
 		msg := fmt.Sprintf("token.Header[\"kid\"]'s type is %T, but not string.", token.Header["kid"])
 		return nil, errors.New(msg)
-	} else {
-		kid = str
 	}
 
+	kid = str
 	key, err := GetKey(kid)
 	if err != nil {
 		return nil, err
