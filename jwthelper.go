@@ -1,7 +1,6 @@
 package jwthelper
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -67,7 +66,7 @@ func GetKey(kid string) (k *Key, err error) {
 	km.RUnlock()
 
 	if !ok {
-		return nil, errors.New("No such key id.")
+		return nil, fmt.Errorf("No such key id.")
 	}
 
 	return k, nil
@@ -105,8 +104,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 
 	m := jwt.GetSigningMethod(alg)
 	if m == nil {
-		msg := fmt.Sprintf("Incorrect alg: %s. %s", alg, availableAlgs)
-		return errors.New(msg)
+		return fmt.Errorf("Incorrect alg: %s. %s", alg, availableAlgs)
 	}
 
 	// Set Signing Method
@@ -155,8 +153,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 			return err
 		}
 	default:
-		msg := fmt.Sprintf("Incorrect alg: %s. %s", alg, availableAlgs)
-		return errors.New(msg)
+		return fmt.Errorf("Incorrect alg: %s. %s", alg, availableAlgs)
 	}
 
 	SetKey(kid, key)
@@ -193,7 +190,7 @@ func keyFunc(token *jwt.Token) (interface{}, error) {
 
 	if str, ok = token.Header["kid"].(string); !ok {
 		msg := fmt.Sprintf("token.Header[\"kid\"]'s type is %T, but not string.", token.Header["kid"])
-		return nil, errors.New(msg)
+		return nil, fmt.Errorf(msg)
 	}
 
 	kid = str
@@ -204,7 +201,7 @@ func keyFunc(token *jwt.Token) (interface{}, error) {
 
 	// Check signing method
 	if token.Method.Alg() != key.Method.Alg() {
-		return nil, errors.New("Signing Method Error.")
+		return nil, fmt.Errorf("Signing Method Error.")
 	}
 
 	return key.VerifyKey, nil
