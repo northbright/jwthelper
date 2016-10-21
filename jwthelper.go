@@ -26,7 +26,7 @@ type KeyManager struct {
 }
 
 const (
-	AvailableAlgs string = "Available algs: HS256,HS384,HS512,RS256,RS384,RS512,PS256,PS384,PS512,ES256,ES384,ES512"
+	availableAlgs string = "Available algs: HS256,HS384,HS512,RS256,RS384,RS512,PS256,PS384,PS512,ES256,ES384,ES512"
 )
 
 var (
@@ -105,7 +105,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 
 	m := jwt.GetSigningMethod(alg)
 	if m == nil {
-		msg := fmt.Sprintf("Incorrect alg: %s. %s", alg, AvailableAlgs)
+		msg := fmt.Sprintf("Incorrect alg: %s. %s", alg, availableAlgs)
 		return errors.New(msg)
 	}
 
@@ -155,7 +155,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 			return err
 		}
 	default:
-		msg := fmt.Sprintf("Incorrect alg: %s. %s", alg, AvailableAlgs)
+		msg := fmt.Sprintf("Incorrect alg: %s. %s", alg, availableAlgs)
 		return errors.New(msg)
 	}
 
