@@ -19,7 +19,7 @@ type Key struct {
 	VerifyKey interface{}       // Verifying key. HMAC: []byte, RSA / RSAPSS: *crypto/rsa.PublicKey, ECDSA: *crypto/ecdsa.PublicKey.
 }
 
-//  KeyManger manages the keys by using kid(key id).
+// KeyManager manages the keys by using kid(key id).
 type KeyManager struct {
 	Keys         map[string]*Key // Key map. Key: kid(key id), Value: Key Struct
 	sync.RWMutex                 // Access map concurrently.
@@ -33,7 +33,7 @@ var (
 	km KeyManager = KeyManager{Keys: make(map[string]*Key)} // Internal key manager.
 )
 
-// ReadKey() reads key bytes from the key file.
+// ReadKey reads key bytes from the key file.
 func ReadKey(keyFile string) (key []byte, err error) {
 	// Make Abs key file path with current executable path if KeyFilePath is relative.
 	p := ""
@@ -49,7 +49,7 @@ func ReadKey(keyFile string) (key []byte, err error) {
 	return buf, nil
 }
 
-// SetKey() sets the kid - Key pair.
+// SetKey sets the kid - Key pair.
 //
 //   Params:
 //       kid: Key id. It should be unique.
@@ -60,7 +60,7 @@ func SetKey(kid string, key *Key) {
 	km.Unlock()
 }
 
-// GetKey() return the key struct by given kid.
+// GetKey return the key struct by given kid.
 func GetKey(kid string) (k *Key, err error) {
 	km.RLock()
 	k, ok := km.Keys[kid]
@@ -73,7 +73,7 @@ func GetKey(kid string) (k *Key, err error) {
 	return k, nil
 }
 
-// DeleteKey() deletes the specified entry from the key map.
+// DeleteKey deletes the specified entry from the key map.
 func DeleteKey(kid string) (err error) {
 	if _, err := GetKey(kid); err != nil {
 		return err
@@ -86,7 +86,7 @@ func DeleteKey(kid string) (err error) {
 	return nil
 }
 
-// SetKeyFromFile() reads the key files and stores the unique kid - Key information pair.
+// SetKeyFromFile reads the key files and stores the unique kid - Key information pair.
 //
 //   Params:
 //       kid: Key id(unique).
@@ -163,7 +163,7 @@ func SetKeyFromFile(kid, alg, signKeyFile, verifyKeyFile string) (err error) {
 	return nil
 }
 
-// CreateTokenString() creates a new JWT token string.
+// CreateTokenString creates a new JWT token string.
 //
 //   Params:
 //       kid: Key id.
@@ -208,7 +208,7 @@ func keyFunc(token *jwt.Token) (interface{}, error) {
 	return key.VerifyKey, nil
 }
 
-// Parse() parses and validates the input token string.
+// Parse parses and validates the input token string.
 //
 //   Params:
 //       tokenString: input JWT token string.
@@ -226,7 +226,7 @@ func Parse(tokenString string) (kid string, claims map[string]interface{}, valid
 	return t.Header["kid"].(string), t.Claims.(jwt.MapClaims), t.Valid, nil
 }
 
-// ParseFromRequest() parses and validates the input token string in an http.Request. It's a wrapper of jwt.ParseFromRequest().
+// ParseFromRequest parses and validates the input token string in an http.Request. It's a wrapper of jwt.ParseFromRequest().
 //
 //   Params:
 //       r: http.Request may contain jwt token.
