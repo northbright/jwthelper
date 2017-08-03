@@ -25,7 +25,7 @@ type KeyManager struct {
 }
 
 const (
-	availableAlgs string = "Available algs: HS256,HS384,HS512,RS256,RS384,RS512,PS256,PS384,PS512,ES256,ES384,ES512"
+	availableAlgs string = "available algs: HS256,HS384,HS512,RS256,RS384,RS512,PS256,PS384,PS512,ES256,ES384,ES512"
 )
 
 var (
@@ -66,7 +66,7 @@ func GetKey(kid string) (k *Key, err error) {
 	km.RUnlock()
 
 	if !ok {
-		return nil, fmt.Errorf("No such key id.")
+		return nil, fmt.Errorf("no such key id")
 	}
 
 	return k, nil
@@ -201,7 +201,7 @@ func keyFunc(token *jwt.Token) (interface{}, error) {
 
 	// Check signing method
 	if token.Method.Alg() != key.Method.Alg() {
-		return nil, fmt.Errorf("Signing Method Error.")
+		return nil, fmt.Errorf("signing method error")
 	}
 
 	return key.VerifyKey, nil
