@@ -7,7 +7,7 @@ import (
 	"github.com/northbright/jwthelper"
 )
 
-func ExampleSign_SignedString() {
+func ExampleSigner_SignedString() {
 	// New a signer with RSA SHA-256 alg.
 	s := jwthelper.NewRSASHASigner([]byte(rsaPrivPEM))
 
