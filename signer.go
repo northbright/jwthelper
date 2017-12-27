@@ -1,6 +1,8 @@
 package jwthelper
 
 import (
+	"fmt"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -12,6 +14,10 @@ type Signer struct {
 type SignerOption struct {
 	f func(s *Signer)
 }
+
+var (
+	ErrInvalidSigner = fmt.Errorf("invalid signer")
+)
 
 func SignerMethod(m jwt.SigningMethod) SignerOption {
 	return SignerOption{func(s *Signer) {
@@ -32,7 +38,7 @@ func NewRSASHASigner(signKey []byte, options ...SignerOption) *Signer {
 
 	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(signKey)
 	if err != nil {
-		return &Signer{}
+		return s
 	}
 
 	s.key = privateKey
@@ -48,7 +54,18 @@ func NewRSASHASignerFromPEM(privatePEM string, options ...SignerOption) *Signer 
 	return NewRSASHASigner(buf, options...)
 }
 
+func (s *Signer) Valid() bool {
+	if s.Method == nil || s.key == nil {
+		return false
+	}
+	return true
+}
+
 func (s *Signer) SignedString(claims jwt.Claims) (string, error) {
+	if !s.Valid() {
+		return "", ErrInvalidSigner
+	}
+
 	token := jwt.NewWithClaims(s.Method, claims)
 	return token.SignedString(s.key)
 }
