@@ -13,6 +13,7 @@ type Signer struct {
 	key    interface{}
 }
 
+// SignerOption represents the option for JWT token signing.
 type SignerOption struct {
 	f func(s *Signer)
 }
