@@ -6,6 +6,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+// Signer is used to sign JWT tokens.
+// It stores signing method and key internally.
 type Signer struct {
 	method jwt.SigningMethod
 	key    interface{}
