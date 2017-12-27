@@ -78,6 +78,12 @@ func NewRSASHAParser(key []byte, options ...ParserOption) *Parser {
 	return p
 }
 
+// NewRSASHAParserFromPEMFile news a parser with RSASHA alg from the RSA public PEM file.
+//
+//     Params:
+//         key: RSA public PEM file path.
+//         options: variadic options returned by option helper functions.
+//                  e.g. ParserUseJSONNumber.
 func NewRSASHAParserFromPEMFile(publicPEM string, options ...ParserOption) *Parser {
 	key, err := ReadKey(publicPEM)
 	if err != nil {
