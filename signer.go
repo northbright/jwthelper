@@ -38,7 +38,7 @@ func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 
 	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(key)
 	if err != nil {
-		return s
+		return &Signer{}
 	}
 
 	s.key = privateKey
