@@ -57,6 +57,12 @@ func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 	return s
 }
 
+// NewRSASHASignerFromPEMFile new a signer with RSASHA alg from a private PEM file on disk.
+//
+//     Params:
+//         privatePEM: RSA private PEM file path.
+//         options: SignerOption returned by option helper functions.
+//                  e.g. SignerMethod(jwt.SigningMethodRS512)
 func NewRSASHASignerFromPEMFile(privatePEM string, options ...SignerOption) *Signer {
 	key, err := ReadKey(privatePEM)
 	if err != nil {
