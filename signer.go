@@ -37,7 +37,7 @@ func SignerMethod(m jwt.SigningMethod) SignerOption {
 //
 //     Params:
 //         key: RSA PEM key.
-//         options: SignerOption returned by option helper functions.
+//         options: variadic SignerOption returned by option helper functions.
 //                  e.g. SignerMethod(jwt.SigningMethodRS512)
 func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 	s := &Signer{
