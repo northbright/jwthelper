@@ -28,6 +28,12 @@ var (
 	ErrInvalidToken = fmt.Errorf("invalid token")
 )
 
+// ParserUseJSONNumber returns the option for using JSON number.
+// It causes the Decoder to unmarshal a number into an interface{} as a Number instead of as a float64.
+// After calling Parser.Parse(), the type of number stored in the map[string]interface{} is:
+// * float64: flag is false.
+// * json.Number: flag is true.
+// See https://godoc.org/encoding/json#Decoder.UseNumber
 func ParserUseJSONNumber(flag bool) ParserOption {
 	return ParserOption{func(p *Parser) {
 		p.parser.UseJSONNumber = flag
