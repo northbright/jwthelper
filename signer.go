@@ -72,6 +72,7 @@ func NewRSASHASignerFromPEMFile(privatePEM string, options ...SignerOption) *Sig
 	return NewRSASHASigner(key, options...)
 }
 
+// Valid validates a signer.
 func (s *Signer) Valid() bool {
 	if s.method == nil || s.key == nil {
 		return false
