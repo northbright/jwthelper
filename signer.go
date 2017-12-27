@@ -25,7 +25,7 @@ func SignerMethod(m jwt.SigningMethod) SignerOption {
 	}}
 }
 
-func NewRSASHASigner(signKey []byte, options ...SignerOption) *Signer {
+func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 	s := &Signer{
 		// Default signing method: RSASHA-256.
 		Method: jwt.SigningMethodRS256,
@@ -36,7 +36,7 @@ func NewRSASHASigner(signKey []byte, options ...SignerOption) *Signer {
 		op.f(s)
 	}
 
-	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(signKey)
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(key)
 	if err != nil {
 		return s
 	}
@@ -45,13 +45,13 @@ func NewRSASHASigner(signKey []byte, options ...SignerOption) *Signer {
 	return s
 }
 
-func NewRSASHASignerFromPEM(privatePEM string, options ...SignerOption) *Signer {
-	buf, err := ReadKey(privatePEM)
+func NewRSASHASignerFromPEMFile(privatePEM string, options ...SignerOption) *Signer {
+	key, err := ReadKey(privatePEM)
 	if err != nil {
 		return &Signer{}
 	}
 
-	return NewRSASHASigner(buf, options...)
+	return NewRSASHASigner(key, options...)
 }
 
 func (s *Signer) Valid() bool {

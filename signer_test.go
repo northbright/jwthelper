@@ -14,7 +14,7 @@ func ExampleSign_SignedString() {
 	}
 
 	privPEM := "keys/rsa-priv-2048.pem"
-	s := jwthelper.NewRSASHASigner(privPEM)
+	s := jwthelper.NewRSASHASignerFromPEMFile(privPEM)
 
 	claims := MyClaims{
 		"1",
@@ -25,6 +25,7 @@ func ExampleSign_SignedString() {
 
 	str, err := s.SignedString(claims)
 	if err != nil {
+		log.Printf("SignedString() error: %v", err)
 		return
 	}
 	log.Printf("SignedString() OK. str: %v", str)
