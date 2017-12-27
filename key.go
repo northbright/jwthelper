@@ -6,6 +6,7 @@ import (
 	"github.com/northbright/pathhelper"
 )
 
+// ReadKey reads the key file on disk into a buffer.
 func ReadKey(keyFile string) ([]byte, error) {
 	var buf []byte
 
