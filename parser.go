@@ -6,19 +6,26 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+// Parser is used to parse JWT token string.
 type Parser struct {
 	key    interface{}
 	parser jwt.Parser
 }
 
+// ParserOption represents the option for parsing JWT token string.
+// Use option helper functions to set options:
+// e.g. ParserUseJSONNumber()
 type ParserOption struct {
 	f func(p *Parser)
 }
 
 var (
+	// ErrInvalidParser represents the error of invalid parser.
 	ErrInvalidParser = fmt.Errorf("invalid parser")
-	ErrParseClaims   = fmt.Errorf("failed to parse claims")
-	ErrInvalidToken  = fmt.Errorf("invalid token")
+	// ErrParseClaims represents the error of failed to parse claims.
+	ErrParseClaims = fmt.Errorf("failed to parse claims")
+	// ErrInvalidToken represents the error of invalid token.
+	ErrInvalidToken = fmt.Errorf("invalid token")
 )
 
 func ParserUseJSONNumber(flag bool) ParserOption {
