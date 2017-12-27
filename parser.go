@@ -40,6 +40,12 @@ func ParserUseJSONNumber(flag bool) ParserOption {
 	}}
 }
 
+// NewRSASHAParser news a parser with RSASHA alg.
+//
+//     Params:
+//         key: RSA public PEM key.
+//         options: variadic options returned by option helper functions.
+//                  e.g. ParserUseJSONNumber.
 func NewRSASHAParser(key []byte, options ...ParserOption) *Parser {
 	p := &Parser{
 		nil,
