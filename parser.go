@@ -93,6 +93,7 @@ func NewRSASHAParserFromPEMFile(publicPEM string, options ...ParserOption) *Pars
 	return NewRSASHAParser(key, options...)
 }
 
+// Valid validates the parser.
 func (p *Parser) Valid() bool {
 	if p.key == nil {
 		return false
