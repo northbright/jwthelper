@@ -101,6 +101,17 @@ func (p *Parser) Valid() bool {
 	return true
 }
 
+// Parse parses the signed string and returns the map which stores claims.
+//
+//     Params:
+//         tokenString: token string to be parsed.
+//     Return:
+//         map stores claims.
+//     comments:
+//         by default, ParserUseJSONNumber option is true.
+//         all numbers will be parsed to json.Number type.
+//         Use Number.Int64(), Number.Float64(), Number.String() according to your need.
+//         You may get float64 type if set ParserUseJSONNumber option to false when new a parser.
 func (p *Parser) Parse(tokenString string) (map[string]interface{}, error) {
 	m := map[string]interface{}{}
 
