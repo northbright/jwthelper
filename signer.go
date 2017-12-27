@@ -2,7 +2,6 @@ package jwthelper
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -67,10 +66,7 @@ func (s *Signer) SignedString(claims ...Claim) (string, error) {
 		return "", ErrInvalidSigner
 	}
 
-	myClaims := Claims{
-		sync.Mutex{},
-		map[string]interface{}{},
-	}
+	myClaims := NewClaims()
 
 	for _, claim := range claims {
 		claim.f(&myClaims)
