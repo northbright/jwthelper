@@ -19,6 +19,7 @@ type SignerOption struct {
 }
 
 var (
+	// ErrInvalidSigner is the error of invalid signer.
 	ErrInvalidSigner = fmt.Errorf("invalid signer")
 )
 
