@@ -80,6 +80,14 @@ func (s *Signer) Valid() bool {
 	return true
 }
 
+// SignedString returns the signed string of the JWT token with given claims.
+//
+//     Params:
+//         claims: variadic Claim returned by claim helper functions.
+//                 e.g. StringClaim("name", "frank")
+//                      IntClaim("count", 100)
+//     Return:
+//         signed string of JWT token.
 func (s *Signer) SignedString(claims ...Claim) (string, error) {
 	if !s.Valid() {
 		return "", ErrInvalidSigner
