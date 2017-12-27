@@ -7,24 +7,24 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type Claims struct {
+type claims struct {
 	m      sync.Mutex
 	claims jwt.MapClaims
 }
 
 type Claim struct {
-	f func(ops *Claims)
+	f func(ops *claims)
 }
 
-func NewClaims() Claims {
-	return Claims{
+func newClaims() claims {
+	return claims{
 		sync.Mutex{},
 		map[string]interface{}{},
 	}
 }
 
 func newClaim(name string, value interface{}) Claim {
-	return Claim{func(c *Claims) {
+	return Claim{func(c *claims) {
 		c.m.Lock()
 		defer c.m.Unlock()
 		c.claims[name] = value

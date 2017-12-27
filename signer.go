@@ -66,7 +66,7 @@ func (s *Signer) SignedString(claims ...Claim) (string, error) {
 		return "", ErrInvalidSigner
 	}
 
-	myClaims := NewClaims()
+	myClaims := newClaims()
 
 	for _, claim := range claims {
 		claim.f(&myClaims)
