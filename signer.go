@@ -14,6 +14,8 @@ type Signer struct {
 }
 
 // SignerOption represents the option for JWT token signing.
+// Use option helper functions to set options:
+// e.g. SignerMethod()
 type SignerOption struct {
 	f func(s *Signer)
 }
