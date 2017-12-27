@@ -3,26 +3,13 @@ package jwthelper_test
 import (
 	"log"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/northbright/jwthelper"
 )
 
 func ExampleSign_SignedString() {
-	type MyClaims struct {
-		UID string `json:"uid"` // User ID
-		jwt.StandardClaims
-	}
-
 	s := jwthelper.NewRSASHASigner([]byte(rsaPrivPEM))
 
-	claims := MyClaims{
-		"1",
-		jwt.StandardClaims{
-			Issuer: "jwthelper",
-		},
-	}
-
-	str, err := s.SignedString(claims)
+	str, err := s.SignedString(jwthelper.StringClaim("UID", "1"))
 	if err != nil {
 		log.Printf("SignedString() error: %v", err)
 		return
