@@ -23,6 +23,7 @@ var (
 	ErrInvalidSigner = fmt.Errorf("invalid signer")
 )
 
+// SignerMethod returns the option for signing method.
 func SignerMethod(m jwt.SigningMethod) SignerOption {
 	return SignerOption{func(s *Signer) {
 		s.method = m
