@@ -31,7 +31,7 @@ func NewRSASHAParser(key []byte, options ...ParserOption) *Parser {
 	p := &Parser{
 		nil,
 		jwt.Parser{
-			// UseJSONNumber will use encoding/json.Decoder.UseNumber().
+			// UseJSONNumber will call encoding/json.Decoder.UseNumber().
 			// It causes the Decoder to unmarshal a number into an interface{} as a Number instead of as a float64.
 			// See https://godoc.org/encoding/json#Decoder.UseNumber
 			UseJSONNumber: true,
