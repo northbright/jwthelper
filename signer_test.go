@@ -1,12 +1,14 @@
 package jwthelper_test
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/northbright/jwthelper"
 )
 
 func ExampleSign_SignedString() {
+	// New a signer with RSA SHA-256 alg.
 	s := jwthelper.NewRSASHASigner([]byte(rsaPrivPEM))
 
 	str, err := s.SignedString(
@@ -19,6 +21,50 @@ func ExampleSign_SignedString() {
 		return
 	}
 	log.Printf("SignedString() OK. str: %v", str)
+
+	// New a parser.
+	p := jwthelper.NewRSASHAParser([]byte(rsaPubPEM))
+
+	mapClaims, err := p.Parse(str)
+	if err != nil {
+		log.Printf("Parse() error: %v", err)
+		return
+	}
+
+	uid, ok := mapClaims["uid"]
+	if !ok {
+		log.Printf("uid not found")
+		return
+	}
+
+	if _, ok = uid.(string); !ok {
+		log.Printf("uid is not string type")
+		return
+	}
+
+	count, ok := mapClaims["count"]
+	if !ok {
+		log.Printf("count not found")
+		return
+	}
+
+	// It'll parse number as json.Number type by default.
+	// Call Number.Int64(), Number.Float64(), Number.String() according to your need.
+	// See https://godoc.org/encoding/json#Number
+	num, ok := count.(json.Number)
+	if !ok {
+		log.Printf("count is not json.Number type: %T", count)
+		return
+	}
+
+	n, err := num.Int64()
+	if err != nil {
+		log.Printf("convert json.Number to int64 error: %v", err)
+		return
+	}
+
+	log.Printf("Parse() OK. uid: %v, count: %v, mapClaims: %v", uid, n, mapClaims)
+
 	// Output:
 }
 
