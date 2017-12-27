@@ -16,6 +16,13 @@ type Claim struct {
 	f func(ops *Claims)
 }
 
+func NewClaims() Claims {
+	return Claims{
+		sync.Mutex{},
+		map[string]interface{}{},
+	}
+}
+
 func newClaim(name string, value interface{}) Claim {
 	return Claim{func(c *Claims) {
 		c.m.Lock()
