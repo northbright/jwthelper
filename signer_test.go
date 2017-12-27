@@ -9,7 +9,11 @@ import (
 func ExampleSign_SignedString() {
 	s := jwthelper.NewRSASHASigner([]byte(rsaPrivPEM))
 
-	str, err := s.SignedString(jwthelper.StringClaim("UID", "1"))
+	str, err := s.SignedString(
+		jwthelper.StringClaim("uid", "1"),
+		jwthelper.IntClaim("count", 100),
+	)
+
 	if err != nil {
 		log.Printf("SignedString() error: %v", err)
 		return
