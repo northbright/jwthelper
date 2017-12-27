@@ -7,7 +7,7 @@ import (
 )
 
 type Signer struct {
-	Method jwt.SigningMethod
+	method jwt.SigningMethod
 	key    interface{}
 }
 
@@ -21,14 +21,14 @@ var (
 
 func SignerMethod(m jwt.SigningMethod) SignerOption {
 	return SignerOption{func(s *Signer) {
-		s.Method = m
+		s.method = m
 	}}
 }
 
 func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 	s := &Signer{
 		// Default signing method: RSASHA-256.
-		Method: jwt.SigningMethodRS256,
+		method: jwt.SigningMethodRS256,
 	}
 
 	// Override customized options.
@@ -55,7 +55,7 @@ func NewRSASHASignerFromPEMFile(privatePEM string, options ...SignerOption) *Sig
 }
 
 func (s *Signer) Valid() bool {
-	if s.Method == nil || s.key == nil {
+	if s.method == nil || s.key == nil {
 		return false
 	}
 	return true
@@ -72,6 +72,6 @@ func (s *Signer) SignedString(claims ...Claim) (string, error) {
 		claim.f(&myClaims)
 	}
 
-	token := jwt.NewWithClaims(s.Method, myClaims.claims)
+	token := jwt.NewWithClaims(s.method, myClaims.claims)
 	return token.SignedString(s.key)
 }
