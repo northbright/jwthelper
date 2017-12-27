@@ -24,12 +24,19 @@ var (
 )
 
 // SignerMethod returns the option for signing method.
+// It'll use jwt.SigningMethodRS256 by default if no signing method specified.
 func SignerMethod(m jwt.SigningMethod) SignerOption {
 	return SignerOption{func(s *Signer) {
 		s.method = m
 	}}
 }
 
+// NewRSASHASigner new a signer with RSASHA alg.
+//
+//     Params:
+//         key: RSA PEM key.
+//         options: SignerOption returned by option helper functions.
+//                  e.g. SignerMethod(jwt.SigningMethodRS512)
 func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 	s := &Signer{
 		// Default signing method: RSASHA-256.
