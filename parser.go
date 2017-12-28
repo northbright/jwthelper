@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -89,7 +90,7 @@ func NewRSASHAParser(key []byte, options ...ParserOption) *Parser {
 //         options: variadic options returned by option helper functions.
 //                  e.g. ParserUseJSONNumber.
 func NewRSASHAParserFromPEMFile(publicPEM string, options ...ParserOption) *Parser {
-	key, err := ReadKey(publicPEM)
+	key, err := ioutil.ReadFile(publicPEM)
 	if err != nil {
 		return &Parser{}
 	}

@@ -2,6 +2,7 @@ package jwthelper
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -66,7 +67,7 @@ func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 //         options: SignerOption returned by option helper functions.
 //                  e.g. SigningMethod(jwt.SigningMethodRS512)
 func NewRSASHASignerFromPEMFile(privatePEM string, options ...SignerOption) *Signer {
-	key, err := ReadKey(privatePEM)
+	key, err := ioutil.ReadFile(privatePEM)
 	if err != nil {
 		return &Signer{}
 	}
