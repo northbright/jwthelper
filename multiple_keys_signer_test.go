@@ -11,14 +11,11 @@ import (
 func ExampleMultipleKeysSigner_SignedString() {
 	// Example to show sign / parse JWT with multiple keys.
 
-	// New a signer with RSA SHA-512 alg by given RSA private PEM key.
-	s1 := jwthelper.NewRSASHASignerFromPEMFile("keys/rsa-priv-vendor.pem", jwthelper.SigningMethod(jwt.SigningMethodRS512))
-	// New a signer with RSA SHA-256 alg by given RSA private PEM key.
-	s2 := jwthelper.NewRSASHASignerFromPEMFile("keys/rsa-priv-api.pem")
-
+	// New a signer with RSA SHA-384 alg by given RSA private PEM key.
+	s2 := jwthelper.NewRSASHASignerFromPEMFile("keys/rsa-priv-api.pem", jwthelper.SigningMethod(jwt.SigningMethodRS384))
 	// New a multiple keys signer and set signers with "kid"(key id) which will be added to claims automatically.
+	// We have RSA private key of API server but not have private key of vendor.
 	signer := jwthelper.NewMultipleKeysSigner()
-	signer.Set("kid-vendor", s1)
 	signer.Set("kid-api", s2)
 
 	str, err := signer.SignedString(
