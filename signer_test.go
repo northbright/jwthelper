@@ -12,8 +12,8 @@ func ExampleSigner_SignedString() {
 	s := jwthelper.NewRSASHASigner([]byte(rsaPrivPEM))
 
 	str, err := s.SignedString(
-		jwthelper.StringClaim("uid", "1"),
-		jwthelper.IntClaim("count", 100),
+		jwthelper.NewClaim("uid", "1"),
+		jwthelper.NewClaim("count", 100),
 	)
 
 	if err != nil {
