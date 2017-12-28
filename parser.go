@@ -1,7 +1,10 @@
 package jwthelper
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -25,7 +28,8 @@ var (
 	// ErrParseClaims represents the error of failed to parse claims.
 	ErrParseClaims = fmt.Errorf("failed to parse claims")
 	// ErrInvalidToken represents the error of invalid token.
-	ErrInvalidToken = fmt.Errorf("invalid token")
+	ErrInvalidToken   = fmt.Errorf("invalid token")
+	ErrInvalidPartNum = fmt.Errorf("invalid number of JWT part")
 )
 
 // ParserUseJSONNumber returns the option for using JSON number.
@@ -137,4 +141,24 @@ func (p *Parser) Parse(tokenString string) (map[string]interface{}, error) {
 	}
 
 	return claims, nil
+}
+
+func ParseClaims(tokenString string) (map[string]interface{}, error) {
+	parts := strings.Split(tokenString, ".")
+	if len(parts) != 3 {
+		return nil, ErrInvalidPartNum
+	}
+
+	buf, err := jwt.DecodeSegment(parts[1])
+	if err != nil {
+		return nil, err
+	}
+
+	m := map[string]interface{}{}
+	dec := json.NewDecoder(bytes.NewBuffer(buf))
+	if err = dec.Decode(&m); err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
