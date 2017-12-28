@@ -8,6 +8,7 @@
 !*.go
 !*.json
 !.travis.yml
+!*.pem
 config.json
 # For HTML
 !*.html
