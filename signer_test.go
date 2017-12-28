@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleSigner_SignedString() {
-	// New a signer with RSA SHA alg by given RSA private PEM key.
+	// New a signer with RSA SHA-256 alg by given RSA private PEM key.
 	s := jwthelper.NewRSASHASigner([]byte(rsaPrivPEM))
 
 	str, err := s.SignedString(
@@ -22,7 +22,7 @@ func ExampleSigner_SignedString() {
 	}
 	log.Printf("SignedString() OK. str: %v", str)
 
-	// New a parser with RSA SHA alg by given RSA public PEM key.
+	// New a parser with RSA SHA-256 alg by given RSA public PEM key.
 	p := jwthelper.NewRSASHAParser([]byte(rsaPubPEM))
 
 	mapClaims, err := p.Parse(str)
