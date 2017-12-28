@@ -15,7 +15,7 @@ type Signer struct {
 
 // SignerOption represents the option for JWT token signing.
 // Use option helper functions to set options:
-// e.g. SignerMethod()
+// e.g. SigningMethod()
 type SignerOption struct {
 	f func(s *Signer)
 }
@@ -25,9 +25,9 @@ var (
 	ErrInvalidSigner = fmt.Errorf("invalid signer")
 )
 
-// SignerMethod returns the option for signing method.
+// SigningMethod returns the option for signing method.
 // It'll use jwt.SigningMethodRS256 by default if no signing method specified.
-func SignerMethod(m jwt.SigningMethod) SignerOption {
+func SigningMethod(m jwt.SigningMethod) SignerOption {
 	return SignerOption{func(s *Signer) {
 		s.method = m
 	}}
@@ -38,7 +38,7 @@ func SignerMethod(m jwt.SigningMethod) SignerOption {
 //     Params:
 //         key: RSA PEM key.
 //         options: variadic SignerOption returned by option helper functions.
-//                  e.g. SignerMethod(jwt.SigningMethodRS512)
+//                  e.g. SigningMethod(jwt.SigningMethodRS512)
 func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 	s := &Signer{
 		// Default signing method: RSASHA-256.
@@ -64,7 +64,7 @@ func NewRSASHASigner(key []byte, options ...SignerOption) *Signer {
 //     Params:
 //         privatePEM: RSA private PEM file path.
 //         options: SignerOption returned by option helper functions.
-//                  e.g. SignerMethod(jwt.SigningMethodRS512)
+//                  e.g. SigningMethod(jwt.SigningMethodRS512)
 func NewRSASHASignerFromPEMFile(privatePEM string, options ...SignerOption) *Signer {
 	key, err := ReadKey(privatePEM)
 	if err != nil {
