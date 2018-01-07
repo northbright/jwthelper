@@ -11,6 +11,7 @@ type CookieOption struct {
 }
 
 // CookieName returns the option for cookie name.
+// It'll use "jwt" as cookie name by default.
 func CookieName(name string) CookieOption {
 	return CookieOption{func(c *http.Cookie) {
 		c.Name = name
