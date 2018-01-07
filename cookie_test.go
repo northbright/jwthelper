@@ -3,6 +3,7 @@ package jwthelper_test
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -12,11 +13,7 @@ import (
 	"github.com/northbright/jwthelper"
 )
 
-var (
-	serverURL = "localhost:8080"
-)
-
-func doPostRequest(URL string) {
+func doPostRequest(URL string) *http.Cookie {
 	v := url.Values{}
 	v.Set("username", "admin")
 	v.Set("password", "admin")
@@ -27,10 +24,38 @@ func doPostRequest(URL string) {
 	req, err := http.NewRequest("POST", URL, strings.NewReader(s))
 	if err != nil {
 		log.Printf("NewRequest error: %v", err)
-		return
+		return nil
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		log.Printf("Do() error: %v", err)
+		return nil
+	}
+	defer resp.Body.Close()
+
+	// Get JWT cookie("jwt").
+	cookies := resp.Cookies()
+	for _, cookie := range cookies {
+		if cookie.Name == "jwt" {
+			log.Printf("After POST, JWT cookie: %v, resp: %v", cookie, resp)
+			return cookie
+		}
+	}
+	return nil
+}
+
+func doGetRequest(URL string, cookie *http.Cookie) {
+	req, err := http.NewRequest("GET", URL, nil)
+	if err != nil {
+		log.Printf("NewRequest error: %v", err)
+		return
+	}
+	// Add JWT cookie return by POST.
+	req.AddCookie(cookie)
 
 	c := &http.Client{}
 	resp, err := c.Do(req)
@@ -40,15 +65,33 @@ func doPostRequest(URL string) {
 	}
 	defer resp.Body.Close()
 
-	// Get Cookies
-	cookies := resp.Cookies()
-	log.Printf("After POST, cookies: %v, resp: %v", cookies, resp)
+	// Get response("admin").
+	buf, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("ReadAll() error: %v", err)
+		return
+	}
+	log.Printf("GET response: %v", string(buf))
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		fmt.Fprintf(w, "GET")
+		cookie, err := r.Cookie("jwt")
+		if err != nil {
+			log.Printf("get JWT cookie error: %v", err)
+			return
+		}
+
+		tokenString := cookie.Value
+		parser := jwthelper.NewRSASHAParser([]byte(rsaPubPEM))
+		m, err := parser.Parse(tokenString)
+		if err != nil {
+			log.Printf("parser.Parse() error: %v", err)
+			return
+		}
+		fmt.Fprintf(w, "hello, %v!", m["username"])
+
 	case "POST":
 		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
 		if err := r.ParseForm(); err != nil {
@@ -90,13 +133,16 @@ func ExampleNewCookie() {
 	mux.HandleFunc("/login", login)
 
 	srv := &http.Server{
-		Addr:    serverURL,
+		Addr:    ":8080",
 		Handler: mux,
 	}
 
 	go func() {
 		time.Sleep(1 * time.Second)
-		doPostRequest("http://" + serverURL + "/login")
+		cookie := doPostRequest("http://localhost:8080/login")
+		if cookie != nil {
+			doGetRequest("http://localhost:8080/login", cookie)
+		}
 		shutdownServer(srv)
 	}()
 
