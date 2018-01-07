@@ -67,7 +67,7 @@ func CookieHttpOnly(httpOnly bool) CookieOption {
 //                  Use helper functions to get options: CookieName(), CookieDomain()...
 //     Comments:
 //         It'll set cookie name to "jwt" if no name option specified.
-func NewCookie(tokenString string, options ...CookieOption) http.Cookie {
+func NewCookie(tokenString string, options ...CookieOption) *http.Cookie {
 	cookie := http.Cookie{
 		// Use "jwt" as cookie name by default.
 		Name:     "jwt",
@@ -81,5 +81,5 @@ func NewCookie(tokenString string, options ...CookieOption) http.Cookie {
 		op.f(&cookie)
 	}
 
-	return cookie
+	return &cookie
 }
