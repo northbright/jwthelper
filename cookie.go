@@ -73,7 +73,7 @@ func NewCookie(tokenString string, options ...CookieOption) *http.Cookie {
 		// Use "jwt" as cookie name by default.
 		Name:     "jwt",
 		Value:    tokenString,
-		Secure:   true,
+		Secure:   false,
 		HttpOnly: true,
 	}
 
