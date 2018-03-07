@@ -6,7 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// NewRSASHAParser news a parser with RSASHA alg.
+// NewRSASHAParser news a parser with RSA-SHA alg.
 //
 //     Params:
 //         key: RSA public PEM key.
@@ -44,7 +44,7 @@ func NewRSASHAParser(key []byte, options ...ParserOption) *Parser {
 	return p
 }
 
-// NewRSASHAParserFromPEMFile news a parser with RSASHA alg from the RSA public PEM file.
+// NewRSASHAParserFromPEMFile news a parser with RSA-SHA alg from the RSA public PEM file.
 //
 //     Params:
 //         key: RSA public PEM file path.
