@@ -74,7 +74,7 @@ func NewCookie(tokenString string, options ...CookieOption) *http.Cookie {
 		Name:     "jwt",
 		Value:    tokenString,
 		Secure:   false,
-		HttpOnly: true,
+		HttpOnly: false,
 	}
 
 	// Override default cookie with customized options.
