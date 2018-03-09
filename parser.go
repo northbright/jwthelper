@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -42,6 +43,70 @@ func ParserUseJSONNumber(flag bool) ParserOption {
 	return ParserOption{func(p *Parser) {
 		p.parser.UseJSONNumber = flag
 	}}
+}
+
+// NewParser creates a parser with given signing method and key.
+//
+//     Params:
+//         m: signing method.
+//         key: key for validation.
+//         options: variadic options returned by option helper functions.
+//                  e.g. ParserUseJSONNumber.
+func NewParser(m jwt.SigningMethod, key []byte, options ...ParserOption) (*Parser, error) {
+	var err error
+
+	p := &Parser{
+		nil,
+		jwt.Parser{
+			// UseJSONNumber will call encoding/json.Decoder.UseNumber().
+			// It causes the Decoder to unmarshal a number into an interface{} as a Number instead of as a float64.
+			// See https://godoc.org/encoding/json#Decoder.UseNumber
+			UseJSONNumber: true,
+			// If populated, only these methods will be considered valid
+			// See https://godoc.org/github.com/dgrijalva/jwt-go#Parser
+			ValidMethods: []string{
+				m.Alg(),
+			},
+		},
+	}
+
+	// Override customized options.
+	for _, op := range options {
+		op.f(p)
+	}
+
+	switch m.(type) {
+	case *jwt.SigningMethodHMAC:
+		p.key = key
+	case *jwt.SigningMethodRSA, *jwt.SigningMethodRSAPSS:
+		if p.key, err = jwt.ParseRSAPublicKeyFromPEM(key); err != nil {
+			return nil, err
+		}
+	case *jwt.SigningMethodECDSA:
+		if p.key, err = jwt.ParseECPublicKeyFromPEM(key); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, ErrInvalidSigningMethod
+	}
+
+	return p, nil
+}
+
+// NewParserFromFile creates a parser with given signing method and key file.
+//
+//     Params:
+//         m: signing method.
+//         key: key for validation.
+//         options: variadic options returned by option helper functions.
+//                  e.g. ParserUseJSONNumber.
+func NewParserFromFile(m jwt.SigningMethod, f string, options ...ParserOption) (*Parser, error) {
+	key, err := ioutil.ReadFile(f)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewParser(m, key, options...)
 }
 
 // Valid validates the parser.

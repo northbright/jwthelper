@@ -2,6 +2,7 @@ package jwthelper
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -13,24 +14,42 @@ type Signer struct {
 	key    interface{}
 }
 
-// SignerOption represents the option for JWT token signing.
-// Use option helper functions to set options:
-// e.g. SigningMethod()
-type SignerOption struct {
-	f func(s *Signer)
-}
-
 var (
+	// ErrInvalidSigningMethod is the error of invalid signing method.
+	ErrInvalidSigningMethod = fmt.Errorf("invalid signing method")
 	// ErrInvalidSigner is the error of invalid signer.
 	ErrInvalidSigner = fmt.Errorf("invalid signer")
 )
 
-// SigningMethod returns the option for signing method.
-// It'll use jwt.SigningMethodRS256 by default if no signing method specified.
-func SigningMethod(m jwt.SigningMethod) SignerOption {
-	return SignerOption{func(s *Signer) {
-		s.method = m
-	}}
+// NewSigner creates a signer with given signing method and key.
+func NewSigner(m jwt.SigningMethod, key []byte) (*Signer, error) {
+	var err error
+	s := &Signer{method: m}
+
+	switch m.(type) {
+	case *jwt.SigningMethodHMAC:
+		s.key = key
+	case *jwt.SigningMethodRSA, *jwt.SigningMethodRSAPSS:
+		if s.key, err = jwt.ParseRSAPrivateKeyFromPEM(key); err != nil {
+			return nil, err
+		}
+	case *jwt.SigningMethodECDSA:
+		if s.key, err = jwt.ParseECPrivateKeyFromPEM(key); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, ErrInvalidSigningMethod
+	}
+	return s, nil
+}
+
+// NewSignerFromFile creates a signer with given signing method and key file.
+func NewSignerFromFile(m jwt.SigningMethod, f string) (*Signer, error) {
+	key, err := ioutil.ReadFile(f)
+	if err != nil {
+		return nil, err
+	}
+	return NewSigner(m, key)
 }
 
 // Valid validates a signer.

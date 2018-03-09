@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/northbright/jwthelper"
 )
 
@@ -84,7 +85,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tokenString := cookie.Value
-		parser := jwthelper.NewRSASHAParser([]byte(rsaPubPEM))
+		parser, err := jwthelper.NewParser(jwt.SigningMethodRS256, []byte(rsaPubPEM))
+		if err != nil {
+			log.Printf("NewParser() error: %v", err)
+			return
+		}
+
 		m, err := parser.Parse(tokenString)
 		if err != nil {
 			log.Printf("parser.Parse() error: %v", err)
@@ -102,7 +108,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 		if username == "admin" && password == "admin" {
-			signer := jwthelper.NewRSASHASigner([]byte(rsaPrivPEM))
+			signer, err := jwthelper.NewSigner(jwt.SigningMethodRS256, []byte(rsaPrivPEM))
+			if err != nil {
+				log.Printf("NewSigner() error: %v", err)
+				return
+			}
+
 			tokenString, err := signer.SignedString(
 				jwthelper.NewClaim("username", username),
 			)

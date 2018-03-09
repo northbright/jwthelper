@@ -12,7 +12,11 @@ func ExampleMultipleKeysSigner_SignedString() {
 	// Example to show sign / parse JWT with multiple keys.
 
 	// New a signer with RSA SHA-384 alg by given RSA private PEM key.
-	s2 := jwthelper.NewRSASHASignerFromPEMFile("keys/rsa-priv-api.pem", jwthelper.SigningMethod(jwt.SigningMethodRS384))
+	s2, err := jwthelper.NewSignerFromFile(jwt.SigningMethodRS384, "keys/rsa-priv-api.pem")
+	if err != nil {
+		log.Printf("NewSigner() error: %v", err)
+		return
+	}
 	// New a multiple keys signer and set signers with "kid"(key id) which will be added to claims automatically.
 	// We have RSA private key of API server but not have private key of vendor.
 	signer := jwthelper.NewMultipleKeysSigner()
@@ -31,8 +35,15 @@ func ExampleMultipleKeysSigner_SignedString() {
 	log.Printf("SignedString() OK. str: %v", str)
 
 	// New parsers from public PEM file.
-	p1 := jwthelper.NewRSASHAParserFromPEMFile("keys/rsa-pub-vendor.pem")
-	p2 := jwthelper.NewRSASHAParserFromPEMFile("keys/rsa-pub-api.pem")
+	p1, err := jwthelper.NewParserFromFile(jwt.SigningMethodRS256, "keys/rsa-pub-vendor.pem")
+	if err != nil {
+		log.Printf("NewParserFromFile() error: %v", err)
+	}
+
+	p2, err := jwthelper.NewParserFromFile(jwt.SigningMethodRS384, "keys/rsa-pub-api.pem")
+	if err != nil {
+		log.Printf("NewParserFromFile() error: %v", err)
+	}
 
 	// New a multiple keys parser and set parsers with "kid".
 	parser := jwthelper.NewMultipleKeysParser()
