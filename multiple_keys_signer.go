@@ -2,11 +2,9 @@ package jwthelper
 
 import (
 	"fmt"
-	"sync"
 )
 
 type MultipleKeysSigner struct {
-	m       sync.Mutex
 	signers map[string]*Signer
 }
 
@@ -17,20 +15,15 @@ var (
 
 func NewMultipleKeysSigner() *MultipleKeysSigner {
 	return &MultipleKeysSigner{
-		m:       sync.Mutex{},
 		signers: map[string]*Signer{},
 	}
 }
 
 func (s *MultipleKeysSigner) Set(kid string, signer *Signer) {
-	s.m.Lock()
-	defer s.m.Unlock()
 	s.signers[kid] = signer
 }
 
 func (s *MultipleKeysSigner) Get(kid string) *Signer {
-	s.m.Lock()
-	defer s.m.Unlock()
 	signer := s.signers[kid]
 
 	return signer

@@ -2,11 +2,9 @@ package jwthelper
 
 import (
 	"fmt"
-	"sync"
 )
 
 type MultipleKeysParser struct {
-	m       sync.Mutex
 	parsers map[string]*Parser
 }
 
@@ -19,20 +17,15 @@ var (
 
 func NewMultipleKeysParser() *MultipleKeysParser {
 	return &MultipleKeysParser{
-		m:       sync.Mutex{},
 		parsers: map[string]*Parser{},
 	}
 }
 
 func (p *MultipleKeysParser) Set(kid string, parser *Parser) {
-	p.m.Lock()
-	defer p.m.Unlock()
 	p.parsers[kid] = parser
 }
 
 func (p *MultipleKeysParser) Get(kid string) *Parser {
-	p.m.Lock()
-	defer p.m.Unlock()
 	parser := p.parsers[kid]
 
 	return parser
