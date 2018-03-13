@@ -9,6 +9,8 @@ import (
 )
 
 func ExampleSigner_SignedString() {
+	log.Printf("\n\nExample of Signer / Parser")
+
 	// New a signer with RSA SHA-256 alg by given RSA private PEM key.
 	s, err := jwthelper.NewSigner(jwt.SigningMethodRS256, []byte(rsaPrivPEM))
 	if err != nil {

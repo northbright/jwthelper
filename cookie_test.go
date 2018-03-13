@@ -140,6 +140,8 @@ func shutdownServer(srv *http.Server) {
 }
 
 func ExampleNewCookie() {
+	log.Printf("\n\nExample of set / get JWT in cookie")
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/login", login)
 

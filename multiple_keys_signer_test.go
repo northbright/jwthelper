@@ -10,6 +10,7 @@ import (
 
 func ExampleMultipleKeysSigner_SignedString() {
 	// Example to show sign / parse JWT with multiple keys.
+	log.Printf("\n\nExample of sign / parse JWT with multiple keys")
 
 	// New a signer with RSA SHA-384 alg by given RSA private PEM key.
 	s2, err := jwthelper.NewSignerFromFile(jwt.SigningMethodRS384, "keys/rsa-priv-api.pem")
