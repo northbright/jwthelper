@@ -35,7 +35,7 @@ func ExampleMultipleKeysSigner_SignedString() {
 	log.Printf("SignedString() OK. str: %v", str)
 
 	// New parsers from public PEM file.
-	p1, err := jwthelper.NewParserFromFile(jwt.SigningMethodRS256, "keys/rsa-pub-vendor.pem")
+	p1, err := jwthelper.NewParserFromFile(jwt.SigningMethodRS512, "keys/rsa-pub-vendor.pem")
 	if err != nil {
 		log.Printf("NewParserFromFile() error: %v", err)
 	}
@@ -96,4 +96,5 @@ func ExampleMultipleKeysSigner_SignedString() {
 	// Output:
 }
 
+// Token signed with RSA SHA-512 alg and vendor private key.
 var tokenStrSignedByVendor string = `eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJjb3VudCI6MTAwLCJraWQiOiJraWQtdmVuZG9yIiwidWlkIjoiMSJ9.b5yqIYAeXMBpSexELGneELzSeCMWbKR_vUDaLiZvmWEv69GrHkytGDk1U-FjxUmoIU7-o8_qyh0StTV-R5okckChWdcdH5hWPIvgbxhI2uIHg4gVk3-BGdJn4nZAYNrk0CkUt-apvSH_0WZA8wlDcGRglpsWmqbD2X0k35VMLoA_boQsK6xzP2cHT3LHUcLVxE9pzC2kKxNho8wgDk9g76EPQ5S0ynso08lFDxOW7K1i8bOq6ZCfnzr98pMNlbcP-AuVqMqG94Ni1qpClnJXZ66CusVQ-cy-2eSnPaZkvlcPTZiQcBNZTPaf09vOXKaqbzWB1zHImbRiAi3EPYktnw`
