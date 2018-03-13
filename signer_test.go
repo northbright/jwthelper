@@ -16,6 +16,7 @@ func ExampleSigner_SignedString() {
 		return
 	}
 
+	// Pass claim... to SignedString().
 	str, err := s.SignedString(
 		jwthelper.NewClaim("uid", "1"),
 		jwthelper.NewClaim("count", 100),
