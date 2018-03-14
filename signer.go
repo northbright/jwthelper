@@ -22,6 +22,10 @@ var (
 )
 
 // NewSigner creates a signer with given signing method and key.
+//
+// key:
+// use random bytes as key for jwt.SigningMethodHMAC.
+// use PEM string as key for jwt.SigningMethodRSA, jwt.SigningMethodRSAPSS and jwt.SigningMethodECDSA.
 func NewSigner(m jwt.SigningMethod, key []byte) (*Signer, error) {
 	var err error
 	s := &Signer{method: m}
