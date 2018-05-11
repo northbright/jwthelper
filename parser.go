@@ -45,7 +45,7 @@ func ParserUseJSONNumber(flag bool) ParserOption {
 	}}
 }
 
-// NewParser creates a parser with given signing method and key.
+// NewParser creates a parser with given signing method and verifying key.
 //
 //     Params:
 //         m: signing method.
@@ -93,7 +93,28 @@ func NewParser(m jwt.SigningMethod, key []byte, options ...ParserOption) (*Parse
 	return p, nil
 }
 
-// NewParserFromFile creates a parser with given signing method and key file.
+// NewParserByAlg creates a parser with given signing method and verifying key.
+// It's an wrapper of NewParser.
+//
+// alg:
+// "alg" Header Parameter Parameter value.
+// See: https://tools.ietf.org/html/rfc7518#section-3.1
+// key:
+// use random bytes as key for "HS256", "HS384", "HS512".
+// use public PEM string as key for "RS256", "RS384", "RS512", "ES256", "ES384", "ES512",
+// "PS256", "PS384", "PS512".
+// use the constant: jwt.UnsafeAllowNoneSignatureType for "none" alg.
+// See https://godoc.org/github.com/dgrijalva/jwt-go#pkg-constants
+func NewParserByAlg(alg string, key []byte, options ...ParserOption) (*Parser, error) {
+	m, ok := AlgToSigningMethodMap[alg]
+	if !ok {
+		return nil, ErrInvalidAlg
+	}
+
+	return NewParser(m, key, options...)
+}
+
+// NewParserFromFile creates a parser with given signing method and verifying key file.
 //
 //     Params:
 //         m: signing method.
@@ -107,6 +128,27 @@ func NewParserFromFile(m jwt.SigningMethod, f string, options ...ParserOption) (
 	}
 
 	return NewParser(m, key, options...)
+}
+
+// NewParserByAlgFromFile creates a parser with given "alg" and verifying key file.
+// It's an wrapper of NewParserFromFile.
+//
+// alg:
+// "alg" Header Parameter Parameter value.
+// See: https://tools.ietf.org/html/rfc7518#section-3.1
+// key:
+// use random bytes as key for "HS256", "HS384", "HS512".
+// use public PEM string as key for "RS256", "RS384", "RS512", "ES256", "ES384", "ES512",
+// "PS256", "PS384", "PS512".
+// use the constant: jwt.UnsafeAllowNoneSignatureType for "none" alg.
+// See https://godoc.org/github.com/dgrijalva/jwt-go#pkg-constants
+func NewParserByAlgFromFile(alg string, f string, options ...ParserOption) (*Parser, error) {
+	m, ok := AlgToSigningMethodMap[alg]
+	if !ok {
+		return nil, ErrInvalidAlg
+	}
+
+	return NewParserFromFile(m, f, options...)
 }
 
 // Valid validates the parser.
