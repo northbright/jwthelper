@@ -68,8 +68,8 @@ func (s *Signer) Valid() bool {
 //
 //     Params:
 //         claims: variadic Claim returned by claim helper functions.
-//                 e.g. StringClaim("name", "frank")
-//                      IntClaim("count", 100)
+//                 e.g. NewClaim("name", "frank")
+//                      NewClaim("count", 100)
 //     Return:
 //         signed string of JWT token.
 func (s *Signer) SignedString(claims ...Claim) (string, error) {

@@ -16,7 +16,7 @@ type claims struct {
 
 // Claim represents JWT claim.
 // Use claim helper functions to get a Claim:
-// StringClaim(), IntClaim(), UintClaim(), TimeClaim()...
+// NewClaim(), TimeClaim()...
 type Claim struct {
 	f func(ops *claims)
 }
