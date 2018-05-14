@@ -45,14 +45,15 @@ func ParserUseJSONNumber(flag bool) ParserOption {
 	}}
 }
 
-// NewParser creates a parser with given signing method and verifying key.
+// newParser creates a parser with given signing method and verifying key.
 //
-//     Params:
-//         m: signing method.
-//         key: key for validation.
-//         options: variadic options returned by option helper functions.
-//                  e.g. ParserUseJSONNumber.
-func NewParser(m jwt.SigningMethod, key []byte, options ...ParserOption) (*Parser, error) {
+// m: signing method.
+// use random bytes as key for jwt.SigningMethodHMAC.
+// use PEM string as key for jwt.SigningMethodRSA, jwt.SigningMethodRSAPSS and jwt.SigningMethodECDSA.
+// for jwt.SigningMethodNone, key is ignored.
+// options: variadic options returned by option helper functions.
+// e.g. ParserUseJSONNumber.
+func newParser(m jwt.SigningMethod, key []byte, options ...ParserOption) (*Parser, error) {
 	var err error
 
 	p := &Parser{
@@ -93,62 +94,39 @@ func NewParser(m jwt.SigningMethod, key []byte, options ...ParserOption) (*Parse
 	return p, nil
 }
 
-// NewParserByAlg creates a parser with given signing method and verifying key.
-// It's an wrapper of NewParser.
+// NewParser creates a parser with given signing method and verifying key.
 //
 // alg:
-// "alg" Header Parameter Parameter value.
 // See: https://tools.ietf.org/html/rfc7518#section-3.1
+// "none" alg is not supported.
 // key:
 // use random bytes as key for "HS256", "HS384", "HS512".
 // use public PEM string as key for "RS256", "RS384", "RS512", "ES256", "ES384", "ES512",
 // "PS256", "PS384", "PS512".
-// use the constant: jwt.UnsafeAllowNoneSignatureType for "none" alg.
-// See https://godoc.org/github.com/dgrijalva/jwt-go#pkg-constants
-func NewParserByAlg(alg string, key []byte, options ...ParserOption) (*Parser, error) {
-	m, ok := AlgToSigningMethodMap[alg]
-	if !ok {
+func NewParser(alg string, key []byte, options ...ParserOption) (*Parser, error) {
+	m := jwt.GetSigningMethod(alg)
+	if m == nil {
 		return nil, ErrInvalidAlg
 	}
-
-	return NewParser(m, key, options...)
+	return newParser(m, key, options...)
 }
 
-// NewParserFromFile creates a parser with given signing method and verifying key file.
-//
-//     Params:
-//         m: signing method.
-//         key: key for validation.
-//         options: variadic options returned by option helper functions.
-//                  e.g. ParserUseJSONNumber.
-func NewParserFromFile(m jwt.SigningMethod, f string, options ...ParserOption) (*Parser, error) {
+// newParserFromFile creates a parser with given signing method and verifying key file.
+func newParserFromFile(m jwt.SigningMethod, f string, options ...ParserOption) (*Parser, error) {
 	key, err := ioutil.ReadFile(f)
 	if err != nil {
 		return nil, err
 	}
-
-	return NewParser(m, key, options...)
+	return newParser(m, key, options...)
 }
 
-// NewParserByAlgFromFile creates a parser with given "alg" and verifying key file.
-// It's an wrapper of NewParserFromFile.
-//
-// alg:
-// "alg" Header Parameter Parameter value.
-// See: https://tools.ietf.org/html/rfc7518#section-3.1
-// key:
-// use random bytes as key for "HS256", "HS384", "HS512".
-// use public PEM string as key for "RS256", "RS384", "RS512", "ES256", "ES384", "ES512",
-// "PS256", "PS384", "PS512".
-// use the constant: jwt.UnsafeAllowNoneSignatureType for "none" alg.
-// See https://godoc.org/github.com/dgrijalva/jwt-go#pkg-constants
-func NewParserByAlgFromFile(alg string, f string, options ...ParserOption) (*Parser, error) {
-	m, ok := AlgToSigningMethodMap[alg]
-	if !ok {
+// NewParserFromFile creates a parser with given "alg" and verifying key file.
+func NewParserFromFile(alg string, f string, options ...ParserOption) (*Parser, error) {
+	m := jwt.GetSigningMethod(alg)
+	if m == nil {
 		return nil, ErrInvalidAlg
 	}
-
-	return NewParserFromFile(m, f, options...)
+	return newParserFromFile(m, f, options...)
 }
 
 // Valid validates the parser.
@@ -161,15 +139,14 @@ func (p *Parser) Valid() bool {
 
 // Parse parses the signed string and returns the map which stores claims.
 //
-//     Params:
-//         tokenString: token string to be parsed.
-//     Return:
-//         map stores claims.
-//     comments:
-//         by default, ParserUseJSONNumber option is true.
-//         all numbers will be parsed to json.Number type.
-//         Use Number.Int64(), Number.Float64(), Number.String() according to your need.
-//         You may get float64 type if set ParserUseJSONNumber option to false when new a parser.
+// tokenString: token string to be parsed.
+// Return:
+// map stores claims.
+// comments:
+// by default, ParserUseJSONNumber option is true.
+// all numbers will be parsed to json.Number type.
+// Use Number.Int64(), Number.Float64(), Number.String() according to your need.
+// You may get float64 type if set ParserUseJSONNumber option to false when new a parser.
 func (p *Parser) Parse(tokenString string) (map[string]interface{}, error) {
 	m := map[string]interface{}{}
 

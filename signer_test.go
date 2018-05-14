@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/northbright/jwthelper"
 )
 
@@ -12,7 +11,7 @@ func ExampleSigner_SignedString() {
 	log.Printf("\n\nExample of Signer / Parser")
 
 	// New a signer with RSA SHA-256 alg by given RSA private PEM key.
-	s, err := jwthelper.NewSigner(jwt.SigningMethodRS256, []byte(rsaPrivPEM))
+	s, err := jwthelper.NewSigner("RS256", []byte(rsaPrivPEM))
 	if err != nil {
 		log.Printf("NewSigner() error: %v", err)
 		return
@@ -31,7 +30,7 @@ func ExampleSigner_SignedString() {
 	log.Printf("SignedString() OK. str: %v", str)
 
 	// New a parser with RSA SHA-256 alg by given RSA public PEM key.
-	p, err := jwthelper.NewParser(jwt.SigningMethodRS256, []byte(rsaPubPEM))
+	p, err := jwthelper.NewParser("RS256", []byte(rsaPubPEM))
 	if err != nil {
 		log.Printf("NewParser() error: %v", err)
 		return

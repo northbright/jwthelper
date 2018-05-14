@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/northbright/jwthelper"
 )
 
@@ -13,7 +12,7 @@ func ExampleMultipleKeysSigner_SignedString() {
 	log.Printf("\n\nExample of sign / parse JWT with multiple keys")
 
 	// New a signer with RSA SHA-384 alg by given RSA private PEM key.
-	s2, err := jwthelper.NewSignerFromFile(jwt.SigningMethodRS384, "keys/rsa-priv-api.pem")
+	s2, err := jwthelper.NewSignerFromFile("RS384", "keys/rsa-priv-api.pem")
 	if err != nil {
 		log.Printf("NewSigner() error: %v", err)
 		return
@@ -23,7 +22,7 @@ func ExampleMultipleKeysSigner_SignedString() {
 	signer := jwthelper.NewMultipleKeysSigner()
 	signer.Set("kid-api", s2)
 
-	str, err := signer.SignedString(
+	tokenStrSignedByAPIKey, err := signer.SignedString(
 		"kid-api",
 		jwthelper.NewClaim("uid", "2"),
 		jwthelper.NewClaim("count", 200),
@@ -33,15 +32,15 @@ func ExampleMultipleKeysSigner_SignedString() {
 		log.Printf("SignedString() error: %v", err)
 		return
 	}
-	log.Printf("SignedString() OK. str: %v", str)
+	log.Printf("SignedString() OK. str: %v", tokenStrSignedByAPIKey)
 
 	// New parsers from public PEM file.
-	p1, err := jwthelper.NewParserFromFile(jwt.SigningMethodRS512, "keys/rsa-pub-vendor.pem")
+	p1, err := jwthelper.NewParserFromFile("RS512", "keys/rsa-pub-vendor.pem")
 	if err != nil {
 		log.Printf("NewParserFromFile() error: %v", err)
 	}
 
-	p2, err := jwthelper.NewParserFromFile(jwt.SigningMethodRS384, "keys/rsa-pub-api.pem")
+	p2, err := jwthelper.NewParserFromFile("RS384", "keys/rsa-pub-api.pem")
 	if err != nil {
 		log.Printf("NewParserFromFile() error: %v", err)
 	}
@@ -51,7 +50,7 @@ func ExampleMultipleKeysSigner_SignedString() {
 	parser.Set("kid-vendor", p1)
 	parser.Set("kid-api", p2)
 
-	tokenStrs := []string{str, tokenStrSignedByVendor}
+	tokenStrs := []string{tokenStrSignedByAPIKey, tokenStrSignedByVendor}
 
 	for _, tokenStr := range tokenStrs {
 		mapClaims, err := parser.Parse(tokenStr)

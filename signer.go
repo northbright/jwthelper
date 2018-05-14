@@ -21,32 +21,15 @@ var (
 	ErrInvalidSigner = fmt.Errorf("invalid signer")
 	// ErrInvalidAlg is the error of invalid alg.
 	ErrInvalidAlg = fmt.Errorf("invalid alg")
-
-	// AlgToSigningMethodMap maps the algorithms described in RFC7518 to jwt.SigningMethod.
-	// See https://tools.ietf.org/html/rfc7518#section-3.1 for more information.
-	AlgToSigningMethodMap = map[string]jwt.SigningMethod{
-		"HS256": jwt.SigningMethodHS256,
-		"HS384": jwt.SigningMethodHS384,
-		"HS512": jwt.SigningMethodHS512,
-		"RS256": jwt.SigningMethodRS256,
-		"RS384": jwt.SigningMethodRS384,
-		"RS512": jwt.SigningMethodRS512,
-		"ES256": jwt.SigningMethodES256,
-		"ES384": jwt.SigningMethodES384,
-		"ES512": jwt.SigningMethodES512,
-		"PS256": jwt.SigningMethodPS256,
-		"PS384": jwt.SigningMethodPS384,
-		"PS512": jwt.SigningMethodPS512,
-		"none":  jwt.SigningMethodNone,
-	}
 )
 
-// NewSigner creates a signer with given signing method and signing key.
+// newSigner creates a signer with given signing method and signing key.
 //
-// key:
+// m: signing method.
+// key: signing key.
 // use random bytes as key for jwt.SigningMethodHMAC.
 // use PEM string as key for jwt.SigningMethodRSA, jwt.SigningMethodRSAPSS and jwt.SigningMethodECDSA.
-func NewSigner(m jwt.SigningMethod, key []byte) (*Signer, error) {
+func newSigner(m jwt.SigningMethod, key []byte) (*Signer, error) {
 	var err error
 	s := &Signer{method: m}
 
@@ -67,41 +50,39 @@ func NewSigner(m jwt.SigningMethod, key []byte) (*Signer, error) {
 	return s, nil
 }
 
-// NewSignerByAlg creates a signer with given "alg" header (RFC7518) and signing key.
+// NewSigner creates a signer with given "alg" header (RFC7518) and signing key.
 //
 // alg:
-// "alg" Header Parameter Parameter value.
 // See: https://tools.ietf.org/html/rfc7518#section-3.1
+// "none" alg is not supported.
 // key:
 // use random bytes as key for "HS256", "HS384", "HS512".
 // use private PEM string as key for "RS256", "RS384", "RS512", "ES256", "ES384", "ES512",
 // "PS256", "PS384", "PS512".
-// use the constant: jwt.UnsafeAllowNoneSignatureType for "none" alg.
-// See https://godoc.org/github.com/dgrijalva/jwt-go#pkg-constants
-func NewSignerByAlg(alg string, key []byte) (*Signer, error) {
-	m, ok := AlgToSigningMethodMap[alg]
-	if !ok {
+func NewSigner(alg string, key []byte) (*Signer, error) {
+	m := jwt.GetSigningMethod(alg)
+	if m == nil {
 		return nil, ErrInvalidAlg
 	}
-	return NewSigner(m, key)
+	return newSigner(m, key)
 }
 
-// NewSignerFromFile creates a signer with given signing method and signing key file.
-func NewSignerFromFile(m jwt.SigningMethod, f string) (*Signer, error) {
+// newSignerFromFile creates a signer with given signing method and signing key file.
+func newSignerFromFile(m jwt.SigningMethod, f string) (*Signer, error) {
 	key, err := ioutil.ReadFile(f)
 	if err != nil {
 		return nil, err
 	}
-	return NewSigner(m, key)
+	return newSigner(m, key)
 }
 
-// NewSignerByAlgFromFile creates a signer with given "alg" and signing key file.
-func NewSignerByAlgFromFile(alg string, f string) (*Signer, error) {
-	m, ok := AlgToSigningMethodMap[alg]
-	if !ok {
+// NewSignerFromFile creates a signer with given "alg" and signing key file.
+func NewSignerFromFile(alg string, f string) (*Signer, error) {
+	m := jwt.GetSigningMethod(alg)
+	if m == nil {
 		return nil, ErrInvalidAlg
 	}
-	return NewSignerFromFile(m, f)
+	return newSignerFromFile(m, f)
 }
 
 // Valid validates a signer.
@@ -114,12 +95,10 @@ func (s *Signer) Valid() bool {
 
 // SignedString returns the signed string of the JWT token with given claims.
 //
-//     Params:
-//         claims: variadic Claim returned by claim helper functions.
-//                 e.g. NewClaim("name", "frank")
-//                      NewClaim("count", 100)
-//     Return:
-//         signed string of JWT token.
+// claims: variadic Claim returned by claim helper functions.
+// e.g. NewClaim("name", "frank"), NewClaim("count", 100)
+// Return:
+// signed string of JWT token.
 func (s *Signer) SignedString(claims ...Claim) (string, error) {
 	if !s.Valid() {
 		return "", ErrInvalidSigner
