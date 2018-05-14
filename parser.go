@@ -94,7 +94,7 @@ func newParser(m jwt.SigningMethod, key []byte, options ...ParserOption) (*Parse
 	return p, nil
 }
 
-// NewParser creates a parser with given signing method and verifying key.
+// NewParser creates a parser with given "alg"(RFC7518) and verifying key.
 //
 // alg:
 // See: https://tools.ietf.org/html/rfc7518#section-3.1
@@ -120,7 +120,7 @@ func newParserFromFile(m jwt.SigningMethod, f string, options ...ParserOption) (
 	return newParser(m, key, options...)
 }
 
-// NewParserFromFile creates a parser with given "alg" and verifying key file.
+// NewParserFromFile creates a parser with given "alg"(RFC7518) and verifying key file.
 func NewParserFromFile(alg string, f string, options ...ParserOption) (*Parser, error) {
 	m := jwt.GetSigningMethod(alg)
 	if m == nil {

@@ -50,7 +50,7 @@ func newSigner(m jwt.SigningMethod, key []byte) (*Signer, error) {
 	return s, nil
 }
 
-// NewSigner creates a signer with given "alg" header (RFC7518) and signing key.
+// NewSigner creates a signer with given "alg"(RFC7518) and signing key.
 //
 // alg:
 // See: https://tools.ietf.org/html/rfc7518#section-3.1
@@ -76,7 +76,7 @@ func newSignerFromFile(m jwt.SigningMethod, f string) (*Signer, error) {
 	return newSigner(m, key)
 }
 
-// NewSignerFromFile creates a signer with given "alg" and signing key file.
+// NewSignerFromFile creates a signer with given "alg"(RFC7518) and signing key file.
 func NewSignerFromFile(alg string, f string) (*Signer, error) {
 	m := jwt.GetSigningMethod(alg)
 	if m == nil {
